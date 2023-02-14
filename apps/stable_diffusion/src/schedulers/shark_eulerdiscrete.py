@@ -90,8 +90,8 @@ class SharkEulerDiscreteScheduler(EulerDiscreteScheduler):
         if args.import_mlir:
             scaling_model = ScalingModel()
             self.scaling_model = compile_through_fx(
-                scaling_model,
-                (example_latent, example_sigma),
+                model=scaling_model,
+                inputs=(example_latent, example_sigma),
                 model_name=f"euler_scale_model_input_{BATCH_SIZE}_{args.height}_{args.width}"
                 + args.precision,
                 extra_args=iree_flags,
@@ -108,11 +108,11 @@ class SharkEulerDiscreteScheduler(EulerDiscreteScheduler):
         else:
             self.scaling_model = get_shark_model(
                 SCHEDULER_BUCKET,
-                "euler_scale_model_input_" + args.precision,
+                "euler_scale_model_input_" + "fp16",  # args.precision,
                 iree_flags,
             )
             self.step_model = get_shark_model(
-                SCHEDULER_BUCKET, "euler_step_" + args.precision, iree_flags
+                SCHEDULER_BUCKET, "euler_step_" + "fp16", iree_flags
             )
 
     def scale_model_input(self, sample, timestep):
